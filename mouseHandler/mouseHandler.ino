@@ -1,5 +1,6 @@
 #include <hidboot.h>
 #include <usbhub.h>
+//#include <time.h>
 
 
 // Satisfy the IDE, which needs to see the include statment in the ino too.
@@ -66,10 +67,18 @@ void setup()
 void loop()
 {
   Usb.Task();
+  
   delay(10);
-  Serial.print(Xmovement);
-  Serial.print(",");
-  Serial.println(Ymovement);
+
+  if(Xmovement != 0 || Ymovement != 0) {
+    //Serial.print(second());
+    Serial.print(millis());
+    Serial.print(" - ");
+    Serial.print(Xmovement);
+    Serial.print(",");
+    Serial.println(-Ymovement);
+  }
+  
   Xmovement = 0;
   Ymovement = 0;
 }
