@@ -1,1 +1,6 @@
- 
+TO-DOs
+
+1. interfaccia utilizzabile
+2. lunghe serie di zeri
+3. x e y precalcolate
+4. velocità
