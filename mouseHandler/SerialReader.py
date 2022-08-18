@@ -10,7 +10,7 @@ from datetime import datetime
 file = open("mouseHandler/mouse-data.csv", "w", encoding="utf-8")
 file.write("Timestamp,dX,dY,X,Y\n")
 endFlag = threading.Event()
-ser = 0
+ser = serial.Serial()
 
 #lettura delle porte aperte
 ports = serial.tools.list_ports.comports()
