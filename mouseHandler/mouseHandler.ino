@@ -9,11 +9,6 @@
 #endif
 #include <SPI.h>
 
-int uppin = 4;
-int downpin = 5;
-int leftpin = 6;
-int rightpin = 7;
-
 int Xmovement = 0;
 int Ymovement = 0;
 
@@ -48,7 +43,7 @@ MouseRptParser Prs;
 void setup()
 {
   Serial.begin( 9600 );
-  Serial.println("Start");
+  Serial.print("");
 
   if (Usb.Init() == -1)
     Serial.println("OSC did not start.");
@@ -56,11 +51,6 @@ void setup()
   delay( 200 );
 
   HidMouse.SetReportParser(0, &Prs);
-
-  pinMode(uppin, OUTPUT);
-  pinMode(downpin, OUTPUT);
-  pinMode(leftpin, OUTPUT);
-  pinMode(rightpin, OUTPUT);
 
 }
 
@@ -71,9 +61,6 @@ void loop()
   delay(10);
 
   if(Xmovement != 0 || Ymovement != 0) {
-    //Serial.print(second());
-    Serial.print(millis());
-    Serial.print(",");
     Serial.print(Xmovement);
     Serial.print(",");
     Serial.println(-Ymovement);

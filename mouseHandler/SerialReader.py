@@ -5,9 +5,12 @@ import tkinter as tk
 import serial.tools.list_ports
 import serial
 import threading
+from datetime import datetime
 
 file = open("mouseHandler/mouse-data.csv", "w", encoding="utf-8")
+file.write("Timestamp,dX,dY,X,Y\n")
 endFlag = False
+ser = 0
 
 #lettura delle porte aperte
 ports = serial.tools.list_ports.comports()
@@ -16,26 +19,34 @@ for onePort in ports:
     portList.append(str(onePort))
 
 def end():
-    print("End")
     global endFlag
+    global ser
+    print("End")
     endFlag = True
-    start_thread.join()
+    ser.close()
+    if start_thread.is_alive():
+        start_thread.join()
     file.close()
     window.destroy()
-    
+    quit()
 
 def start():
     global endFlag
-    port = variable.get()[:variable.get().index(" ")]
+    global ser
+    port = selection.get()[:selection.get().index(" ")]
     print("Start with port " + port)
     ser = serial.Serial(port, 9600)
     endFlag = 0
-    while True:
-        if endFlag:
-            break
+    x = y = 0
+    while not endFlag and ser.is_open:
+        timestamp = str(datetime.now())[11:]
+        data = ""
         data = str(ser.readline())[2:-5]
-        print(data)
-        file.write(data + "\n")
+        if data != "" and "start" not in data.lower():
+            x += int(data[:data.index(",")])
+            y += int(data[data.index(",")+1:])
+        print(timestamp + " - " + data)
+        file.write(timestamp + "," + data + "," + str(x) + "," + str(y) + "\n")
 
 start_thread = threading.Thread(target=start)
 def start_thread_func():
@@ -54,9 +65,9 @@ if __name__ == "__main__":
     window.resizable(False, False)
 
     #creazione del menù a tendina
-    variable = tk.StringVar(window)
-    variable.set(portList[0])
-    opt = tk.OptionMenu(window, variable, *portList)
+    selection = tk.StringVar(window)
+    selection.set(portList[0])
+    opt = tk.OptionMenu(window, selection, *portList)
     opt.grid(row= 0, column = 1)
 
     #creazione del bottone start
