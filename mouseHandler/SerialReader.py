@@ -4,8 +4,9 @@
 import tkinter as tk
 import serial.tools.list_ports
 import serial
+import threading
 
-file = open("mouse-data.csv", "w")
+file = open("mouseHandler/mouse-data.csv", "w", encoding="utf-8")
 endFlag = False
 
 #lettura delle porte aperte
@@ -18,20 +19,27 @@ def end():
     print("End")
     global endFlag
     endFlag = True
-    window.destroy()
+    start_thread.join()
     file.close()
+    window.destroy()
+    
 
 def start():
+    global endFlag
     port = variable.get()[:variable.get().index(" ")]
     print("Start with port " + port)
     ser = serial.Serial(port, 9600)
     endFlag = 0
-    while not endFlag:
+    while True:
+        if endFlag:
+            break
         data = str(ser.readline())[2:-5]
         print(data)
-        file.writelines(data) 
+        file.write(data + "\n")
 
-
+start_thread = threading.Thread(target=start)
+def start_thread_func():
+    start_thread.start()
 
 
 
@@ -52,7 +60,7 @@ if __name__ == "__main__":
     opt.grid(row= 0, column = 1)
 
     #creazione del bottone start
-    start_button = tk.Button(window, text="Start", command=lambda: start())
+    start_button = tk.Button(window, text="Start", command=lambda: start_thread_func())
     start_button.grid(row = 0, column = 0)
 
     #creazione del bottone end
