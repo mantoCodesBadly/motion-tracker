@@ -9,7 +9,7 @@ from datetime import datetime
 
 file = open("mouseHandler/mouse-data.csv", "w", encoding="utf-8")
 file.write("Timestamp,dX,dY,X,Y\n")
-endFlag = False
+endFlag = threading.Event()
 ser = 0
 
 #lettura delle porte aperte
@@ -21,14 +21,13 @@ for onePort in ports:
 def end():
     global endFlag
     global ser
-    print("End")
-    endFlag = True
+    endFlag.set()
     ser.close()
     if start_thread.is_alive():
         start_thread.join()
     file.close()
+    print("File saved")
     window.destroy()
-    quit()
 
 def start():
     global endFlag
@@ -36,17 +35,19 @@ def start():
     port = selection.get()[:selection.get().index(" ")]
     print("Start with port " + port)
     ser = serial.Serial(port, 9600)
-    endFlag = 0
     x = y = 0
-    while not endFlag and ser.is_open:
+    while not endFlag.is_set() and ser.is_open:
         timestamp = str(datetime.now())[11:]
         data = ""
-        data = str(ser.readline())[2:-5]
+        try:
+            data = str(ser.readline())[2:-5]
+        except:
+            print("The port is closed")
         if data != "" and "start" not in data.lower():
             x += int(data[:data.index(",")])
             y += int(data[data.index(",")+1:])
-        print(timestamp + " - " + data)
-        file.write(timestamp + "," + data + "," + str(x) + "," + str(y) + "\n")
+            print(timestamp + " - " + data)
+            file.write(timestamp + "," + data + "," + str(x) + "," + str(y) + "\n")
 
 start_thread = threading.Thread(target=start)
 def start_thread_func():
