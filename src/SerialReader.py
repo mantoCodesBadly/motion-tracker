@@ -1,6 +1,3 @@
-#creare interfaccia grafica con bottone start, stop e un menù a tendina per selezionare la porta seriale
-#https://www.tutorialspoint.com/how-to-stop-a-loop-with-a-stop-button-in-tkinter
-
 import tkinter as tk
 from tkinter import filedialog
 import serial.tools.list_ports
@@ -14,29 +11,28 @@ portList = []
 for onePort in ports:
     portList.append(str(onePort))
 
-endFlag = threading.Event()
+end_flag = threading.Event() 
 ser = serial.Serial()
 
 def end():
-    global endFlag
+    global end_flag
     global ser
-    endFlag.set()
+    end_flag.set()#settare la variabile globale end_flag per terminare il ciclo infinito
     ser.close()
     if start_thread.is_alive():
-        start_thread.join()
+        start_thread.join()#terminare il thread
     file.close()
     print("File saved")
-    window.destroy()
 
 def start():
-    global endFlag
+    global end_flag
     global ser
     port = selection.get()[:selection.get().index(" ")]
-    print("Start with port " + port)
+    print("Starting with port " + port)
     ser = serial.Serial(port, 9600)
     x = y = 0
-    while not endFlag.is_set() and ser.is_open:
-        timestamp = str(datetime.now())[11:]
+    while not end_flag.is_set() and ser.is_open:
+        timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
         data = ""
         try:
             data = str(ser.readline())[2:-5]
@@ -58,6 +54,7 @@ def open_file():
                                           title = "Select a File",)
     file = open(file_name, "w", encoding="utf-8")
     file.write("Timestamp,dX,dY,X,Y\n")
+    file.write(datetime.now().strftime("%H:%M:%S.%f")[:-3] + ",0,0,0,0\n")
 
 if __name__ == "__main__":
 

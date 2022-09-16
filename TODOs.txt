@@ -1,6 +1,16 @@
 TO-DOs
 
-1. interfaccia utilizzabile - threading(?) e estetica
-2. timestamps con python invece che con arduino
-3. x e y precalcolate con  python
-5. installare serial python su computer di destinazione
+1. gestire eccezione se non si salva file
+2. possibilità di scegliere se salvare rilevamenti con movimenti nulli
+3. possibiità di scegliere la frequenza di salvataggio:
+    rilevare a 100Hz
+    salvarsi per 10 volte il rilevamento in una variabile
+    poi stampare le variabili sul file
+    poi resettare a 0 le variabili
+4. togliere le prime rilevazioni
+5. gestire caso "OSC did not start."
+6. gestire salvataggio file solo CSV
+7. gestire interruzione forzata del ciclo infinito
+8. gestire eccezioni apertura file
+9. costruire sempre nuovo thread a avvio lettura
+10. gestire eccezione se non si seleziona un file
