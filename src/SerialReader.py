@@ -2,21 +2,20 @@
 #https://www.tutorialspoint.com/how-to-stop-a-loop-with-a-stop-button-in-tkinter
 
 import tkinter as tk
+from tkinter import filedialog
 import serial.tools.list_ports
 import serial
 import threading
 from datetime import datetime
-
-file = open("data/mouse-data.csv", "w", encoding="utf-8")
-file.write("Timestamp,dX,dY,X,Y\n")
-endFlag = threading.Event()
-ser = serial.Serial()
 
 #lettura delle porte aperte
 ports = serial.tools.list_ports.comports()
 portList = []
 for onePort in ports:
     portList.append(str(onePort))
+
+endFlag = threading.Event()
+ser = serial.Serial()
 
 def end():
     global endFlag
@@ -53,9 +52,12 @@ start_thread = threading.Thread(target=start)
 def start_thread_func():
     start_thread.start()
 
-
-
-
+def open_file():
+    global file
+    file_name = filedialog.asksaveasfilename(initialdir = ".",
+                                          title = "Select a File",)
+    file = open(file_name, "w", encoding="utf-8")
+    file.write("Timestamp,dX,dY,X,Y\n")
 
 if __name__ == "__main__":
 
@@ -79,4 +81,10 @@ if __name__ == "__main__":
     end_button = tk.Button(window, text="End", command=lambda: end())
     end_button.grid(row = 1, column = 0)
 
+    browse_button = tk.Button(window, text="Choose location", command=lambda: open_file())
+    browse_button.grid(row = 1, column = 1)
+
     window.mainloop()
+
+
+
